@@ -22,7 +22,8 @@ import com.google.android.gms.location.LocationServices
 //data class to store the user Latitude and longitude
 data class LatandLong(
     val latitude: Double = 0.0,
-    val longitude: Double = 0.0
+    val longitude: Double = 0.0,
+    val ready: Boolean = false,
 )
 
 //A callback for receiving notifications from the FusedLocationProviderClient.
@@ -40,14 +41,14 @@ fun getUserLocation(context: Context): LatandLong {
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 result.lastLocation?.let { location ->
-                    currentUserLocation = LatandLong(location.latitude, location.longitude)
+                    currentUserLocation = LatandLong(location.latitude, location.longitude, true)
                     Log.d("LocationCallback", "Lat: ${location.latitude}, Lng: ${location.longitude}")
                 }
             }
         }
         val locationRequest = LocationRequest.create().apply {
-            interval = 2000L // Request location updates every 2 seconds
-            fastestInterval = 2000L // The fastest rate at which updates can occur (also 2 seconds)
+            interval = 50000L // Request location updates every 2 seconds
+            fastestInterval = 50000L // The fastest rate at which updates can occur (also 2 seconds)
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY // Use high accuracy for location
         }
         locationProvider.requestLocationUpdates(
