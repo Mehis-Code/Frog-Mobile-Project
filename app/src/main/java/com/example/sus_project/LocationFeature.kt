@@ -19,7 +19,7 @@ import com.example.sus_project.utils.*
 
 
 @Composable
-fun LocationFeature(isPermissionGranted: Boolean) {
+fun LocationFeature(isPermissionGranted: Boolean, location: LatandLong) {
     var city by remember { mutableStateOf("") }
     var location by remember { mutableStateOf(LatandLong()) }
     location = getUserLocation(LocalContext.current)

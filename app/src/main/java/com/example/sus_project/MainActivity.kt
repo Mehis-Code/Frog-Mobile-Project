@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     //Permission management
     var isPermissionGranted by remember { mutableStateOf(false) }
+    var location by remember { mutableStateOf(LatandLong()) }
     RequestLocationPermissionUsingRememberLauncherForActivityResult(
         onPermissionGranted = { isPermissionGranted = true },
         onPermissionDenied = { isPermissionGranted = false }
@@ -39,7 +40,7 @@ fun Main() {
     Surface(Modifier.fillMaxSize()){
         Column {
             TopBar()
-            LocationFeature(isPermissionGranted)
+            LocationFeature(isPermissionGranted, location)
         }
     }
 }
