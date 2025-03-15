@@ -12,36 +12,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 
 
 @Composable
 fun TopBar() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.onPrimary),
-
-        ) {
-        SpacerThing()
+        TopBarSpacer()
         Surface(
             modifier = Modifier
-                .height(60.dp),
-
+                .height(60.dp)
+                .background(MaterialTheme.colorScheme.primary),
         ) {
             //The icons
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primary),
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.sus),
                     contentDescription = "My Drawable",
-                    modifier = Modifier.padding(start = 5.dp)
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .padding(end = 5.dp)
                 )
-                MyButton(text = "Home", onClick = { /*TODO*/ })
-                MyButton(text = "Profile", onClick = { /*TODO*/ })
-                MyButton(text = "Settings", onClick = { /*TODO*/ })
+                MyButton(text = "Pal", onClick = { /*TODO*/ })
+                MyButton(text = "Smal", onClick = { /*TODO*/ })
+                MyButton(text = "P I E M O D E", onClick = { /*TODO*/ })
             }
         }
-    }
 }
 
 
@@ -49,14 +50,29 @@ fun TopBar() {
 fun MyButton(text: String, onClick: () -> Unit) {
     Surface(
         modifier = Modifier
+            .background(MaterialTheme.colorScheme.primary)
             .fillMaxHeight()
-            .clickable { onClick() },
+            .clip(RoundedCornerShape(5.dp))
+            .clickable { onClick() }
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(16.dp),
-        )
-    }
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(16.dp)
+
+
+)   }
+}
+
+@Composable
+fun TopBarSpacer() {
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .windowInsetsTopHeight(WindowInsets.statusBars)
+            .background(MaterialTheme.colorScheme.primary),
+    )
 }
 
 @Preview
@@ -65,11 +81,3 @@ fun TopBarPreview() {
     TopBar()
 }
 
-@Composable
-fun SpacerThing() {
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsTopHeight(WindowInsets.statusBars)
-    )
-}
