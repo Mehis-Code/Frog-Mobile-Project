@@ -23,9 +23,9 @@ import com.google.android.gms.location.LocationServices
 
 //data class to store the user Latitude and longitude
 data class LatandLong(
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
-    val ready: Boolean = false,
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
+    var ready: Boolean = false,
 )
 
 //A callback for receiving notifications from the FusedLocationProviderClient.

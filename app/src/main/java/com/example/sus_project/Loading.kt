@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -29,13 +30,15 @@ fun Loading() {
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.width(200.dp),
+
+                modifier = Modifier.width(200.dp)
+                    .offset(y = (88).dp),
                 strokeWidth = 8.dp,
                 color = MaterialTheme.colorScheme.secondary,
             )
             Text(
                 text = "Loading...",
-                modifier = Modifier.offset(y = (80).dp),
+                modifier = Modifier.offset(y = (164).dp),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.tertiary
             )
