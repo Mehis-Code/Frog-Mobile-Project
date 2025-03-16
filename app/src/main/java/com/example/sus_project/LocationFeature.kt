@@ -1,6 +1,7 @@
 package com.example.sus_project
 
 import android.location.Geocoder
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
@@ -34,9 +35,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -50,9 +54,8 @@ fun LocationFeature(isPermissionGranted: Boolean, upperLocation: MutableState<La
         // Fetching location in lower level component LocationFeature(), and passing to upper level Main()
         var errorMessage by remember { mutableStateOf("") }  // To hold error message
         var location = getUserLocation(LocalContext.current, listen.value)
-        if (listen.value) {
-            upperLocation.value = location
-        }
+        upperLocation.value = location
+
         val geocoder = Geocoder(LocalContext.current)
         // Get address from latitude and longitude
         val addresses: List<android.location.Address>? = if (listen.value) {
@@ -69,6 +72,8 @@ fun LocationFeature(isPermissionGranted: Boolean, upperLocation: MutableState<La
             val address = addresses[0]
             if (listen.value) {
                 city.value = address.subAdminArea ?: "City not found"
+                upperLocation.value.latitude = address.latitude
+                upperLocation.value.longitude = address.longitude
                 errorMessage = ""  // Clear error message if a valid address is found
             } else {
                 upperLocation.value.latitude = address.latitude
@@ -120,23 +125,31 @@ fun ButtonAndText(location: MutableState<LatandLong>, listen: MutableState<Boole
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .imePadding() // Moves the UI up when the keyboard appears
+            .imePadding()
     ) {
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.ime), // Additional padding when keyboard is open
+                .windowInsetsPadding(WindowInsets.ime),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            var cityText by remember { mutableStateOf(city.value) }  // Corrected: city is MutableState
+            var cityText by remember { mutableStateOf(city.value) }
             var selected by remember { mutableStateOf(false) }
-            // Detect focus on the TextField
+
+            // Detect focus state
             val focusRequester = remember { FocusRequester() }
+
             if (!listen.value) {
+                Text(text = "*Only Finnish Frog data available",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 10.sp)
+
+                // TextField with proper focus handling
                 TextField(
                     value = cityText,
                     onValueChange = {
-                        cityText = it // Updating the city MutableState
+                        cityText = it
+                        selected = true
                     },
                     label = { Text("City Name") },
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -146,26 +159,36 @@ fun ButtonAndText(location: MutableState<LatandLong>, listen: MutableState<Boole
                         onDone = {
                             focusManager.clearFocus()
                             keyboardController?.hide()
-                            city.value = cityText // Updating the city MutableState
-                            cityText = ""
+
+                            if (cityText.isNotEmpty()) {
+                                city.value = cityText // Update the city if not empty
+                            }
+                            cityText = "" // Clear the text field
                         }
                     ),
                     modifier = Modifier
                         .padding(8.dp)
-                        .focusRequester(focusRequester) // FocusRequester attached to TextField
+                        .focusRequester(focusRequester)
                         .onFocusChanged { focusState ->
-                            selected = focusState.isFocused  // Update selected based on focus
+                            selected = focusState.isFocused
+                        }
+                        .clickable {
+                            focusRequester.requestFocus()
+                            keyboardController?.show() // Show keyboard when clicked
                         }
                 )
+
             }
 
-            // Hide the button when the TextField is focused (selected)
+            // Show the button only when TextField is not focused
             if (!selected) {
                 Button(
                     modifier = Modifier.padding(16.dp),
                     onClick = {
                         listen.value = !listen.value
-                        location.value = LatandLong()
+                        if (!listen.value) {
+                            location.value = LatandLong() // Reset location when switching to input mode
+                        }
                     }
                 ) {
                     Text(
@@ -177,4 +200,5 @@ fun ButtonAndText(location: MutableState<LatandLong>, listen: MutableState<Boole
         }
     }
 }
+
 

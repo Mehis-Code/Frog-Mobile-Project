@@ -51,8 +51,10 @@ fun Main() {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                Text(text = "Your location is: ${upperLocation.value.latitude}, ${upperLocation.value.longitude}")
                 TopBar()
-                LocationFeature(isPermissionGranted, upperLocation)
+                LocationFeature(isPermissionGranted,  upperLocation)
+
             }
         }
 
