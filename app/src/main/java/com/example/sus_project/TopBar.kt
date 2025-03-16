@@ -32,7 +32,7 @@ fun TopBar() {
                     .background(MaterialTheme.colorScheme.primary),
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.sus),
+                    painter = painterResource(id = R.drawable.frogradar),
                     contentDescription = "My Drawable",
                     modifier = Modifier
                         .padding(start = 5.dp)

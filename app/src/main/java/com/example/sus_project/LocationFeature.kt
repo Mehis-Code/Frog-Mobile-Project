@@ -13,19 +13,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.Button
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import com.example.sus_project.utils.*
-
-
+import kotlin.Double
 
 
 @Composable
-fun LocationFeature(isPermissionGranted: Boolean, location: LatandLong) {
-    var city by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf(LatandLong()) }
-    location = getUserLocation(LocalContext.current)
+fun LocationFeature(isPermissionGranted: Boolean, upperLocation: MutableState<LatandLong>) {
     if (!isPermissionGranted) {
         Text(text = "Permissions needed for app to function")
     } else {
+        var city by remember { mutableStateOf("") }
+        // Activate callback on listen statechange
+        var listen by remember { mutableStateOf(true) }
+        // Fetching location in lower level component LocationFeature(), and passing to upper level Main()
+        var location = getUserLocation(LocalContext.current, listen)
+        if (listen) {
+            upperLocation.value = location
+        }
         if (city == "") {
             Loading()
         }
@@ -38,8 +43,13 @@ fun LocationFeature(isPermissionGranted: Boolean, location: LatandLong) {
             city = address.subAdminArea ?: "City not found"
         }
     Text(text = "Your city is: $city")
-        Text(text = "Your location is: ${location.latitude}, ${location.longitude}")
+        Text(text = "Your location is: ${upperLocation.value.latitude}, ${upperLocation.value.longitude}")
+        Text(text = "${if (listen) "Stop" else "Start"} listening")
+    Button (onClick = {
+        listen = !listen
+        upperLocation.value = LatandLong()
+    }) {
 
-
+    }
     }
 }
