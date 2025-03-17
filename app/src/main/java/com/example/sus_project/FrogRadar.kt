@@ -16,21 +16,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.JsonSyntaxException
+import com.patrykandpatryk.vico.compose.chart.Chart
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -38,12 +40,110 @@ import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import com.patrykandpatryk.vico.compose.axis.axisLabelComponent
+import com.patrykandpatryk.vico.compose.axis.horizontal.bottomAxis
+import com.patrykandpatryk.vico.compose.axis.vertical.startAxis
+import com.patrykandpatryk.vico.compose.chart.column.columnChart
+import com.patrykandpatryk.vico.core.axis.AxisPosition
+import com.patrykandpatryk.vico.core.axis.formatter.AxisValueFormatter
+import com.patrykandpatryk.vico.core.component.text.TextComponent
+import com.patrykandpatryk.vico.core.entry.entryModelOf
+
+
 data class GatheringInfo(
     @SerializedName("Gathering.Conversions.WGS84.LatMin(N)") val FrogLatitude: String,
     @SerializedName("Gathering.Conversions.WGS84.LonMax(E)") val FrogLongitude: String,
     @SerializedName("Taxon.ScientificName") val FrogName: String,
     @SerializedName("Gathering.Date.Begin") val Date: String
 )
+
+@Composable
+fun FrogRadar(x0: Double, x1: Double) {
+    val context = LocalContext.current
+    var infoList by remember { mutableStateOf<List<GatheringInfo>>(emptyList()) }
+    LaunchedEffect(Unit) {
+        // Start loading the data
+        copyFileToInternalStorage(context, "FilteredFrog.json", "FilteredFrog.json")
+        infoList = loadGatheringInfo(context)
+    }
+    val chosenLat = x0
+    val chosenLon = x1
+    val filteredLocations = filterLocations(infoList, chosenLat, chosenLon)
+    val frogTypesCount = countFrogTypes(filteredLocations)
+    val ranaCount = frogTypesCount["Rana arvalis"] ?: 0
+    val bufoCount = frogTypesCount["Bufo bufo"] ?: 0
+    val ranaTempCount = frogTypesCount["Rana temporaria"] ?: 0
+
+    val ranaDiv = ranaCount.toFloat() / filteredLocations.size.toFloat()
+    val bufoDiv = bufoCount.toFloat() / filteredLocations.size.toFloat()
+    val ranaTempDiv = ranaTempCount.toFloat() / filteredLocations.size.toFloat()
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "${filteredLocations.size} Frog sightings within 10km",
+            modifier = Modifier.padding(bottom = 2.dp)
+        )
+        Text(
+            text = "Rana Arvalis: ${ranaCount} (${"%.0f".format(ranaDiv * 100)}%)",
+            modifier = Modifier.padding(bottom = 2.dp)
+        )
+        Text(
+            text = "Bufo Bufo: ${bufoCount} (${"%.0f".format(bufoDiv * 100)}%)",
+            modifier = Modifier.padding(bottom = 2.dp)
+        )
+        Text(
+            text = "Rana Temporaria: ${ranaTempCount} (${"%.0f".format(ranaTempDiv * 100)}%)",
+        )
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(2.dp)
+            .background(MaterialTheme.colorScheme.secondary)
+            .zIndex(10f)
+    )
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(2.dp)
+    ) {
+        item {
+            val entryModel = entryModelOf(ranaCount, bufoCount, ranaTempCount)
+            // Define labels for the X axis
+            val labels = listOf("RanaArva", "BufoBufo", "RanaTemp")
+            val chartColors = listOf(
+                Color.Red, // Rana arvalis
+                Color.Green, // Bufo bufo
+                Color.Blue // Rana temporaria
+            )
+
+            // Create a custom AxisValueFormatter
+            val axisValueFormatter = AxisValueFormatter<AxisPosition.Horizontal.Bottom> { value, _ ->
+
+                labels.getOrNull(value.toInt()) ?: ""
+            }
+            Chart(
+                chart = columnChart(),
+                model = entryModel,
+                startAxis = startAxis(),
+                bottomAxis = bottomAxis(valueFormatter = axisValueFormatter),
+            )
+        }
+        items(filteredLocations) { info ->
+            Frog(info)
+        }
+    }
+
+}
+
 
 fun countFrogTypes(gatheringInfoList: List<GatheringInfo>): Map<String, Int> {
     // Define the three frog types
@@ -92,67 +192,6 @@ fun filterLocations(
         val frogDate = info.Date
         dateFormat.parse(frogDate) // Parse the Date and sort by it
     }
-}
-@Composable
-fun FrogRadar(x0: Double, x1: Double) {
-    val context = LocalContext.current
-    var infoList by remember { mutableStateOf<List<GatheringInfo>>(emptyList()) }
-    LaunchedEffect(Unit) {
-        // Start loading the data
-        copyFileToInternalStorage(context, "FilteredFrog.json", "FilteredFrog.json")
-        infoList = loadGatheringInfo(context)
-    }
-        val chosenLat = x0
-        val chosenLon = x1
-        val filteredLocations = filterLocations(infoList, chosenLat, chosenLon)
-        val frogTypesCount = countFrogTypes(filteredLocations)
-        val ranaCount = frogTypesCount["Rana arvalis"] ?: 0
-        val bufoCount = frogTypesCount["Bufo bufo"] ?: 0
-        val ranaTempCount = frogTypesCount["Rana temporaria"] ?: 0
-
-        val ranaDiv = ranaCount.toFloat() / filteredLocations.size.toFloat()
-        val bufoDiv = bufoCount.toFloat() / filteredLocations.size.toFloat()
-        val ranaTempDiv = ranaTempCount.toFloat() / filteredLocations.size.toFloat()
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "${filteredLocations.size} Frog sightings within 10km",
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-            Text(
-                text = "Rana arvalis: ${ranaCount} (${"%.0f".format(ranaDiv * 100)}%)",
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-            Text(
-                text = "Bufo bufo: ${bufoCount} (${"%.0f".format(bufoDiv * 100)}%)",
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-            Text(
-                text = "Rana temporaria: ${ranaTempCount} (${"%.0f".format(ranaTempDiv * 100)}%)",
-            )
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(MaterialTheme.colorScheme.secondary)
-                .zIndex(10f)
-        )
-        //Graph here
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(2.dp)
-        ) {
-            items(filteredLocations) { info ->
-                Frog(info)
-            }
-        }
-
 }
 
 private fun copyFileToInternalStorage(context: Context, sourceFileName: String, destinationFileName: String) {
