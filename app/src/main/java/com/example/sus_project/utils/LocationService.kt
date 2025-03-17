@@ -50,7 +50,7 @@ fun getUserLocation(context: Context, listen: Boolean): LatandLong {
                 }
             }
             val locationRequest = LocationRequest.create().apply {
-                interval = 5000L
+                interval = 500L
                 fastestInterval = 500L
                 priority = LocationRequest.PRIORITY_HIGH_ACCURACY
                 smallestDisplacement = 5f

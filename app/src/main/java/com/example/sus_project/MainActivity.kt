@@ -37,7 +37,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Main() {
     var isPermissionGranted by remember { mutableStateOf(false) }
-    var upperLocation = remember { mutableStateOf(LatandLong()) } // Keep state in parent
     var state = remember { mutableStateOf(false) }
 
     RequestLocationPermissionUsingRememberLauncherForActivityResult(
@@ -51,10 +50,8 @@ fun Main() {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(text = "Your location is: ${upperLocation.value.latitude}, ${upperLocation.value.longitude}")
                 TopBar()
-                LocationFeature(isPermissionGranted,  upperLocation)
-
+                LocationFeature(isPermissionGranted)
             }
         }
 
