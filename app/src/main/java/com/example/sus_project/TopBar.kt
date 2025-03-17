@@ -38,9 +38,12 @@ fun TopBar() {
                         .padding(start = 5.dp)
                         .padding(end = 5.dp)
                 )
-                MyButton(text = "Pal", onClick = { /*TODO*/ })
-                MyButton(text = "Smal", onClick = { /*TODO*/ })
-                MyButton(text = "P I E M O D E", onClick = { /*TODO*/ })
+                Image(
+                    painter = painterResource(id = R.drawable.radarname),
+                    contentDescription = "My Drawable",
+                    modifier = Modifier
+                        .padding( end = 5.dp, top = 5.dp)
+                )
             }
         }
 }

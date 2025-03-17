@@ -37,8 +37,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Main() {
     var isPermissionGranted by remember { mutableStateOf(false) }
-    var state = remember { mutableStateOf(false) }
-
     RequestLocationPermissionUsingRememberLauncherForActivityResult(
         onPermissionGranted = { isPermissionGranted = true },
         onPermissionDenied = { isPermissionGranted = false }
@@ -57,8 +55,6 @@ fun Main() {
 
     }
 }
-
-
 
 @Preview
 @Composable

@@ -126,7 +126,6 @@ fun LocationFeature(isPermissionGranted: Boolean) {
                                 )
                             }"
                         )
-
                         if (errorMessage.isNotEmpty()) {
                             Text(
                                 text = errorMessage,
@@ -134,13 +133,12 @@ fun LocationFeature(isPermissionGranted: Boolean) {
                                 modifier = Modifier.padding(top = 8.dp)
                             )
                         }
-
                         // FrogRadar Section
                         Column(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.secondary)
+                                .background(MaterialTheme.colorScheme.primary)
                         ) {
                             Column(
                                 modifier = Modifier
@@ -149,7 +147,6 @@ fun LocationFeature(isPermissionGranted: Boolean) {
                                     .fillMaxWidth()
                                     .background(MaterialTheme.colorScheme.primary)
                             ) {
-                                Text("Frog sightings!")
                                 FrogRadar(
                                     upperLocation.value.latitude,
                                     upperLocation.value.longitude
@@ -169,6 +166,8 @@ fun LocationFeature(isPermissionGranted: Boolean) {
         }
     }
 }
+
+
 
 
 @Composable
@@ -203,6 +202,7 @@ fun ButtonAndText(location: MutableState<LatandLong>, listen: MutableState<Boole
                 colors = TextFieldDefaults.colors(
                     unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
                     focusedLabelColor = Color.White,
+                    cursorColor = Color.White
                 ),
                 value = cityText,
                 onValueChange = {
