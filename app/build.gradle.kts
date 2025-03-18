@@ -59,4 +59,8 @@ dependencies {
     //Non-defaults
     implementation("com.google.android.gms:play-services-location:21.1.0")
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.patrykandpatryk.vico:view:1.5.2")
+    implementation("com.patrykandpatryk.vico:compose:1.5.2")
+
 }

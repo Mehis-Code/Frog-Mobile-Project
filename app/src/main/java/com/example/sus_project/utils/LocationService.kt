@@ -4,22 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Looper
 import android.util.Log
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 
 
-//Handy tools written by Raheem Jr. from ProAndroidDev.com for getting the user location
+//Handy tools written by Raheem Jr. from ProAndroidDev.com for getting the user location, modified a little bit
 
 //data class to store the user Latitude and longitude
 data class LatandLong(
@@ -30,8 +27,6 @@ data class LatandLong(
 
 //A callback for receiving notifications from the FusedLocationProviderClient.
 lateinit var locationCallback: LocationCallback
-//The main entry point for interacting with the Fused Location Provider
-lateinit var locationProvider: FusedLocationProviderClient
 
 //Function to get user latitude and longitude
 @SuppressLint("MissingPermission")
@@ -49,6 +44,7 @@ fun getUserLocation(context: Context, listen: Boolean): LatandLong {
                     }
                 }
             }
+            //How often requests can be made, I made this long by default
             val locationRequest = LocationRequest.create().apply {
                 interval = 50000L
                 fastestInterval = 500L
@@ -64,7 +60,7 @@ fun getUserLocation(context: Context, listen: Boolean): LatandLong {
                 locationProvider.removeLocationUpdates(locationCallback)
             }
         } else {
-            // If not listening, do nothing.
+            // If not listening, do not update location
             onDispose {}
         }
     }
