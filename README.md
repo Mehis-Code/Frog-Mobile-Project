@@ -1,8 +1,6 @@
 # FrogRadar. - Location-based Frog Sighting visualizer
 
-This Android app was developed as the course project for **COMP.SE.221**. 
-
-It uses the user's location to find frog sightings close to the user, or a chosen location. It can be used to see whether frogs have been spotted within an area, and their species. 
+FrogRadar uses the user's location to find frog sightings close to the user, or a chosen location. It can be used to see whether frogs have been spotted within an area, and their species. 
 
 - The app is built using Android Studio, and utilizing Jetpack Compose <img src="https://developer.android.com/static/images/spot-icons/jetpack-compose.svg" height="28" /> and Kotlin <img src="https://download.logo.wine/logo/Kotlin_(programming_language)/Kotlin_(programming_language)-Logo.wine.png" height="28" marginLeft="5" />
 
